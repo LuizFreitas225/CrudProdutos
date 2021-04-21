@@ -1,0 +1,185 @@
+
+<!DOCTYPE html >
+
+<html lang="pt-br" xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:f="http://xmlns.jcp.org/jsf/core"
+	xmlns:h="http://xmlns.jcp.org/jsf/html">
+
+
+
+<h:head>
+	<title>Cadastro de Produtos</title>
+
+</h:head>
+
+<h:body>
+	<h1>Cadastro De Produtos</h1>
+	<h:messages id="mensagemValidacao" style="color:red;margin:8px;" />
+	<h:form styleClass="form" id="formularioEnvio">
+		<h:panelGrid id="gridInputs" columns="2" styleClass="painel">
+
+
+
+
+			<h:outputLabel value="Nome:" styleClass="label" />
+			<h:inputText value="#{cadastroController.produto.nome}"
+				styleClass="input">
+
+			</h:inputText>
+
+			<h:outputLabel value="Esporte:" styleClass="label" />
+			<h:selectOneMenu value="#{cadastroController.produto.esporte}"
+				styleClass="input">
+				<f:selectItems value="#{cadastroController.listaEsportes}" var="obj"
+					itemLabel="#{obj.label}" />
+            </h:selectOneMenu>
+				
+
+			
+			<h:outputLabel styleClass="label" value="Data De Validade: " />
+
+			<h:inputText id="inputData" styleClass="input"
+				value="#{cadastroController.produto.dataDeValidade}"
+				converterMessage="Insira uma data no formato dd/mm/yyyy"
+				required="true"
+				requiredMessage="Insira a data de valida do produto">
+				<f:ajax event="blur" execute="@this" render="mensagemValidacao" />
+				<f:convertDateTime type="localDate" pattern="dd/MM/yyyy"
+					timeZone="GMT-3" />
+
+			</h:inputText>
+			<h:outputLabel value="Marca:" styleClass="label" />
+			<h:inputText value="#{cadastroController.produto.marca}"
+				styleClass="input" />
+
+			<h:outputLabel value="Preço:" styleClass="label" />
+			<h:inputText value="#{cadastroController.produto.preco}"
+				styleClass="input" />
+
+            <h:selectOneRadio value="#{cadastroController.produto.publicoAlvo}">
+					<f:selectItems value="#{cadastroController.listaPublico}" var="obj"
+					itemLabel="#{obj.label}" />
+				</h:selectOneRadio>
+
+
+
+		</h:panelGrid>
+		<h:panelGrid id="gridBtn" columns="4">
+			<h:commandButton value="Incluir"
+				disabled="#{cadastroController.produto.id != null}"
+				styleClass="button" actionListener="#{cadastroController.incluir}">
+				<f:ajax execute="@this  formularioEnvio:gridInputs"
+					render="formularioEnvio:gridInputs pgDataTable mensagemValidacao" />
+
+			</h:commandButton>
+			<h:commandButton value="Alterar"
+				disabled="#{cadastroController.produto.id == null}"
+				styleClass="button" actionListener="#{cadastroController.alterar}">
+				<f:ajax execute="@this  formularioEnvio:gridInputs"
+					render="formularioEnvio:gridInputs pgDataTable mensagemValidacao" />
+			</h:commandButton>
+			<h:commandButton value="Limpar" styleClass="button"
+				actionListener="#{cadastroController.limpar}">
+				<f:ajax execute="@this"
+					render="formularioEnvio:gridInputs formularioEnvio:gridBtn" />
+			</h:commandButton>
+			<h:commandButton value="Excluir"
+				disabled="#{cadastroController.produto.id == null}"
+				styleClass="button" actionListener="#{cadastroController.excluir}">
+				<f:ajax execute="@this "
+					render="formularioEnvio:gridInputs pgDataTable mensagemValidacao" />
+			</h:commandButton>
+
+
+		</h:panelGrid>
+		<br />
+		<br />
+
+
+		<h:panelGrid id="filtro" colunms="1">
+			<h:outputLabel value="Filtro:" styleClass="label" />
+			<h:selectOneMenu value="#{cadastroController.esporteFiltro}"
+				styleClass="input">
+				<f:selectItems value="#{cadastroController.listaEsportes}" var="obj"
+					itemLabel="#{obj.label}" />
+			</h:selectOneMenu>
+
+			<h:commandButton value="Filtrar" styleClass="button"
+				actionListener="#{cadastroController.excluir}">
+				<f:ajax execute="filtro " render="pgDataTable " />
+			</h:commandButton>
+		</h:panelGrid>
+		<br />
+		<br />
+		<h:panelGroup id="pgDataTable">
+			<h:dataTable styleClass="dataTable"
+				value="#{cadastroController.filtrar}" var="obj">
+
+				<h:column>
+					<f:facet name="header">Id</f:facet>
+					<h:outputLabel value="#{obj.id}" />
+				</h:column>
+				<h:column>
+					<f:facet name="header">Nome</f:facet>
+					<h:outputLabel value="#{obj.nome}" />
+				</h:column>
+
+				<h:column>
+					<f:facet name="header">Esporte</f:facet>
+					<h:outputLabel value="#{obj.esporte.label}" />
+				</h:column>
+				
+				<h:column>
+					<f:facet name="header">Publico</f:facet>
+					<h:outputLabel value="#{obj.publicoAlvo.label}" />
+				</h:column>
+
+				<h:column>
+					<f:facet name="header">Validade</f:facet>
+					<h:outputLabel value="#{obj.dataDeValidade}">
+						<f:convertDateTime type="localDate" pattern="dd-MM-yyyy"
+							timeZone="GMT-3" />
+					</h:outputLabel>
+				</h:column>
+
+				<h:column>
+					<f:facet name="header">Marca</f:facet>
+					<h:outputLabel value="#{obj.marca}" />
+				</h:column>
+
+				<h:column>
+					<f:facet name="header">Preço</f:facet>
+					<h:outputLabel value="#{obj.preco}" />
+				</h:column>
+
+				<h:column>
+					<f:facet name="header">Preço</f:facet>
+					<h:commandButton value="Editar" styleClass="button"
+						actionListener="#{cadastroController.editar(obj)}">
+						<f:ajax execute="@this"
+							render="formularioEnvio:gridInputs  formularioEnvio:gridBtn mensagemValidacao" />
+					</h:commandButton>
+
+					<h:commandButton value="Excluir" styleClass="button"
+						actionListener="#{cadastroController.excluir(obj)}">
+						<f:ajax execute="@this"
+							render="formularioEnvio:pgDataTable  mensagemValidacao" />
+					</h:commandButton>
+				</h:column>
+
+
+				<h:commandButton value="Excluir"
+					disabled="#{crudController.livro.id == null}" styleClass="button"
+					actionListener="#{cadastroController.excluir}">
+
+				</h:commandButton>
+
+
+
+			</h:dataTable>
+		</h:panelGroup>
+	</h:form>
+</h:body>
+
+
+</html>
